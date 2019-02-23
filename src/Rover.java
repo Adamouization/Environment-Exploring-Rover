@@ -19,6 +19,14 @@ public class Rover {
 		Motor.C.setSpeed(speed);
 	}
 	
+	public void move_backward() {
+		Motor.B.backward();
+		Motor.C.backward();
+		Delay.msDelay(200);
+
+	}
+	
+	
 	public void stop() {
 		Motor.B.stop(true);
 		Motor.C.stop(true);
