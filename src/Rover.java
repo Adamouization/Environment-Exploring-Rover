@@ -5,15 +5,11 @@ public class Rover {
 
 	private int speed;
 	private int delay_time;
-
-
-	
 	
 	public Rover(int speed, int delay_time) {
 		this.speed = speed;
 		this.delay_time = delay_time;
 	}
-
 
 	public void move_forwards() {
 		Motor.B.forward();
@@ -22,7 +18,6 @@ public class Rover {
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
 	}
-
 	
 	public void stop() {
 		Motor.B.stop(true);
@@ -41,7 +36,6 @@ public class Rover {
 
 	}
 
-	
 	public void turn_right() {
 	    		
 		Motor.B.backward();
@@ -51,7 +45,6 @@ public class Rover {
 
 	}
 
-	
 	public void turn_by_angle(int angle) {
 		// TODO Auto-generated method stub
 	}

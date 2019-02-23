@@ -27,9 +27,7 @@ public class Robot {
 				this_rover.stop();
 				wall_detected_by_IR = this_sensor.IRSense(50, 0, 50);
 			}
-
+			
 		}
-		
-	}
-	
+	}	
 }
