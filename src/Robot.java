@@ -1,8 +1,3 @@
-import lejos.hardware.Button;
-import lejos.hardware.motor.Motor;
-import lejos.robotics.SampleProvider;
-import lejos.utility.Delay;
-
 public class Robot {
 
 	public static void main(String[] args) {
