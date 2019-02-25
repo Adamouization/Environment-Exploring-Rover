@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.ArrayList;
 
 import lejos.hardware.port.SensorPort;
@@ -6,9 +5,10 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.robotics.SampleProvider;
 
+
 /**
- * 
- * @author ajaamour, tslattery
+ * Class containing methods for reading sensor readings.
+ * @authors Tom Slattery, Adam Jaamour
  */
 public class Sensors implements ISensors {
 	
@@ -51,7 +51,6 @@ public class Sensors implements ISensors {
  			
 			// set to a lower value if the maximum 32-bit float value is read from the sensor
 			if (readingValue >= Float.MAX_VALUE) {
-	
 				readingValue = infinityReading;
 			}
 			initialValues[i] = readingValue;

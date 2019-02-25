@@ -1,7 +1,6 @@
 /**
  * Interface for the different sensor classes.
- * @author tslattery
- *
+ * @authors Tom Slattery, Adam Jaamour
  */
 public interface ISensors {
 
@@ -10,4 +9,5 @@ public interface ISensors {
 		public boolean bumperSensor();
 		
 		public float ultrasoundSenseDistanceToWall(float threshold, int numberOfReadings);
+
 }

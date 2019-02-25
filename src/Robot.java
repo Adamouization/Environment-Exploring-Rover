@@ -1,10 +1,11 @@
 import lejos.hardware.Button;
 import lejos.utility.Delay;
 
+
 /**
- * 
- * @author tslattery
- *
+ * Contains the methods that define the robot's states 
+ * and the main function to start controlling it.
+ * @authors Tom Slattery, Adam Jaamour
  */
 public class Robot {
 	
@@ -19,32 +20,35 @@ public class Robot {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
 		// create new objects
-		Robot this_robot = new Robot();
-		Rover this_rover = new Rover(500, 100);
-		ISensors this_sensor = new Sensors();		
+		Robot robot = new Robot();
+		Rover rover = new Rover(500);
+		ISensors sensors = new Sensors();		
 		
 		// booleans to keep track of system states
-		boolean initial_state;
-		boolean wall_following_state;
-				
+		boolean isInitialState;
+		boolean isWallFollowingState;
+			
+		// keep track of the number of times the touch sensor was activated for the experience.
 		int numberOfBumps = 0;
 		
+		// wait for a button to be pressed to start the robot
         Button.waitForAnyPress();
 
 		// INITIAL STATE - move forward until bumper is pushed
 		char direction = 'F';
-		initial_state = true;
-		wall_following_state = false;
-		this_rover.move_forwards();
+		isInitialState = true;
+		isWallFollowingState = false;
+		rover.moveForward();
 		
 		// System.out.println("INITIAL STATE");
-		while(initial_state) {
-			this_rover.move_forwards();
+		while(isInitialState) {
+			rover.moveForward();
 			
-			initial_state = !checkBumper(this_sensor);
+			isInitialState = !checkBumper(sensors);
 			
-			if(!initial_state) {
+			if(!isInitialState) {
 				numberOfBumps++;
 			}
 		}
@@ -55,71 +59,64 @@ public class Robot {
 			//SEARCHING STATE - UNDERSTAND STATE OF THE ENVIRONMENT
 			//System.out.println("SEARCHING STATE");
 
-			moveBack(this_rover); 
+			moveBack(rover); 
 		
-			direction = this_robot.sweepEyes(this_rover, this_sensor, direction); //sweep eyes and find a direction to move
+			direction = robot.sweepEyes(rover, sensors, direction); //sweep eyes and find a direction to move
 			//Direction is the direction that is free, camera points in the OPPOSITE DIRECTION
-			interpretDirection(this_rover, direction);
-			
+			interpretDirection(rover, direction);
 			
 			//WALL FOLLOWING STATE - ROBOT IS PARALLEL TO A WALL WITH THE CAMERA FACING THE WALL
 			//System.out.println("WALL FOLLOWING STATE");
-			wall_following_state = true;
-			boolean is_bumper_pushed = false;
+			isWallFollowingState = true;
+			boolean isBumperPushed = false;
 			while(true) {
-				
-				while(wall_following_state) {
+				while(isWallFollowingState) {
 					
-					is_bumper_pushed = checkBumper(this_sensor);
-					if(is_bumper_pushed) {
+					isBumperPushed = checkBumper(sensors);
+					if(isBumperPushed) {
 						numberOfBumps++;
 					}
 					
-					if(is_bumper_pushed) {
+					if(isBumperPushed) {
 						break;
 					}
 						
-					float distance_to_wall = this_sensor.ultrasoundSenseDistanceToWall(THRESHOLD, 50);
-					
+					float distanceToWall = sensors.ultrasoundSenseDistanceToWall(THRESHOLD, 50);
 						
-					if(distance_to_wall >= FOLLOWING_DISTANCE + TOLERANCE) {
-						
+					if(distanceToWall >= FOLLOWING_DISTANCE + TOLERANCE) {
 						//camera points LEFT
 						if(direction == 'R') { 
-							this_rover.curve_while_moving(-100);
+							rover.curveWhileMoving(-100);
 						} 
-						
 						//camera points RIGHT
 						else if(direction == 'L') { 
-							this_rover.curve_while_moving(100);
+							rover.curveWhileMoving(100);
 						}
 						
-					} else if (distance_to_wall <= FOLLOWING_DISTANCE - TOLERANCE){
-		
+					} 
+					
+					else if (distanceToWall <= FOLLOWING_DISTANCE - TOLERANCE){
 						//camera points LEFT
 						if(direction == 'R') { 
-							this_rover.curve_while_moving(100);
+							rover.curveWhileMoving(100);
 						} 
-						
 						//camera points RIGHT
 						else if(direction == 'L') { 
-							this_rover.curve_while_moving(-100);
+							rover.curveWhileMoving(-100);
 						}
 												
-					} else {
-						this_rover.move_forwards();
-					}
+					} 
 					
+					else {
+						rover.moveForward();
+					}
 				}
 				
-				if(is_bumper_pushed) {
+				if(isBumperPushed) {
 					break;
 				}
-				
 			}
-			this_rover.stop();
-			
-
+			rover.stop();
 		}
 	}	
 
@@ -140,7 +137,6 @@ public class Robot {
 		
 		//RIGHT BLOCKED, LEFT FREE
 		else if(!l && r) {
-			
 			return  'L';
 		} 
 		
@@ -161,41 +157,42 @@ public class Robot {
 	/** sweepEyes
 	 * 
 	 * Sweeps the eyes back and forth
-	 * @param this_rover
-	 * @param this_sensor
+	 * @param rover
+	 * @param sensors
 	 * @return True if a wall is sensed
 	 */
-	private char sweepEyes(Rover this_rover, ISensors this_sensor, char opposite_of_current_eye_direction) {
-		this_rover.eyes_to_front();
+	private char sweepEyes(Rover rover, ISensors sensors, char oppositeOfCurrentEyeDirection) {
+		rover.moveEyesToFront();
 		
-		boolean wall_on_left = false;
-		boolean wall_on_right = false;
+		boolean isWallOnLeft = false;
+		boolean isWallOnRight = false;
 				
-		if(opposite_of_current_eye_direction == 'R') {
+		if(oppositeOfCurrentEyeDirection == 'R') {
 			//Check Left 
-			this_rover.turn_eyes_to_angle(-90);
-			wall_on_left = this_sensor.ultrasoundSense(THRESHOLD, 15);
+			rover.turnEyesToAngle(-90);
+			isWallOnLeft = sensors.ultrasoundSense(THRESHOLD, 15);
 			Delay.msDelay(100);
+			
+			//Check Right
+			rover.turnEyesToAngle(90);
+			isWallOnRight = sensors.ultrasoundSense(THRESHOLD, 15);
+			Delay.msDelay(100);
+		} 
 		
-			
+		else {	
 			//Check Right
-			this_rover.turn_eyes_to_angle(90);
-			wall_on_right = this_sensor.ultrasoundSense(THRESHOLD, 15);
-			Delay.msDelay(100);
-		} else {	
-			//Check Right
-			this_rover.turn_eyes_to_angle(90);
-			wall_on_right = this_sensor.ultrasoundSense(THRESHOLD, 15);
+			rover.turnEyesToAngle(90);
+			isWallOnRight = sensors.ultrasoundSense(THRESHOLD, 15);
 			Delay.msDelay(100);
 			
 			//Check Left 
-			this_rover.turn_eyes_to_angle(-90);
-			wall_on_left = this_sensor.ultrasoundSense(THRESHOLD, 15);
+			rover.turnEyesToAngle(-90);
+			isWallOnLeft = sensors.ultrasoundSense(THRESHOLD, 15);
 			Delay.msDelay(100);
 		}
 		
-		this_rover.eyes_to_front();
-		return(wallState( wall_on_left, wall_on_right));
+		rover.moveEyesToFront();
+		return(wallState(isWallOnLeft, isWallOnRight));
 	}
 	
 	/** checkBumper
@@ -204,22 +201,21 @@ public class Robot {
 	 * 
 	 * @return True if bumper sensor triggered, False if not
 	 */
-	public static boolean checkBumper(ISensors this_sensor) {
-		
-		boolean bumper_pushed;
-		bumper_pushed = this_sensor.bumperSensor();
-		return bumper_pushed;
+	public static boolean checkBumper(ISensors sensors) {
+		boolean isBumperPushed;
+		isBumperPushed = sensors.bumperSensor();
+		return isBumperPushed;
 	}
 	
 	/** moveBack
 	 * 
 	 * 	Inches the robot back a tiny bit away from whatever it has hit.
 	 */
-	public static void moveBack(Rover this_rover) {
-		this_rover.stop();
-		this_rover.move_backward();
+	public static void moveBack(Rover rover) {
+		rover.stop();
+		rover.moveBackward();
 		Delay.msDelay(200);
-		this_rover.stop();
+		rover.stop();
 	}
 	
 	/** interpretDirection
@@ -228,34 +224,34 @@ public class Robot {
 	 *  Turns L, R or interprets middle as a right turn
 	 *  Turns the camera in the opposite direction to the movement of the robot
 	 */
-	public static void interpretDirection(Rover this_rover, char direction) {
+	public static void interpretDirection(Rover rover, char direction) {
 		//WALL AHEAD, TURN RIGHT
 		if(direction == 'A') {
-			this_rover.turn_right_90();
+			rover.turnRight90();
 		} 
 		
 		//WALLS R AND AHEAD, TURN LEFT
 		else if (direction == 'L') {
-			this_rover.turn_left_90();
+			rover.turnLeft90();
 		} 
 		
 		//WALLS L AND AHEAD, TURN RIGHT
 		else if (direction == 'R') {
-			this_rover.turn_right_90();
+			rover.turnRight90();
 		} 
 		
-		this_rover.camera_direction(direction);
+		rover.cameraDirection(direction);
 	}
 	
 	/** inchForwards
 	 * 
 	 * Moves the rover forwards by a very small amount
-	 * @param this_rover
+	 * @param rover
 	 */
-	public static void inchForwards(Rover this_rover) {
-		this_rover.move_forwards();
+	public static void inchForwards(Rover rover) {
+		rover.moveForward();
 		Delay.msDelay(800);
-		this_rover.stop();
+		rover.stop();
 	}
 
 }

@@ -1,57 +1,60 @@
 import lejos.hardware.motor.Motor;
 import lejos.utility.Delay;
 
+
 /**
- * 
- * @author tslattery
- *
+ * Class for Rover movement methods, including:
+ * 		- wheel movement
+ * 		- UltraSound sensor movement
+ * @authors Tom Slattery, Adam Jaamour
  */
 public class Rover {
-
+	
+	// global variable
 	private int speed;
-	private int delay_time;
 	
 	/** Rover
 	 * 
-	 * @param speed
-	 * @param delay_time
+	 * Constructor for the Rover class.
+	 * @param speed: the speed the motors move at
 	 */
-	public Rover(int speed, int delay_time) {
+	public Rover(int speed) {
 		this.speed = speed;
-		this.delay_time = delay_time;
 		Motor.A.setSpeed(500);
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
 	}
 
-	/** move_forwards
+	/** moveForward
 	 * 
+	 * Method for the robot to move forward at the specified speed.
 	 */
-	public void move_forwards() {
+	public void moveForward() {
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
 		Motor.B.forward();
 		Motor.C.forward();
 	}
 	
-	/** curve_while_moving
+	/** curveWhileMoving
 	 * 
-	 * Curve slightly while moving
-	 * + = curve right
-	 * - = curve left
-	 * @param speed_difference
+	 * Curve the robot's direction slightly while moving.
+	 * (+ = curve right)
+	 * (- = curve left)
+	 * @param speed_difference: defines the curve's strength
 	 */
-	public void curve_while_moving(int speed_difference) {
+	public void curveWhileMoving(int speed_difference) {
 		Motor.B.setSpeed(speed + speed_difference);
 		Motor.C.setSpeed(speed - speed_difference);
 		Motor.B.forward();
 		Motor.C.forward();
 	}
 	
-	/** move_backward
+	/** moveBackward
 	 * 
+	 * Make the robot move backwards.
 	 */
-	public void move_backward() {
+	public void moveBackward() {
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
 		Motor.B.backward();
@@ -60,27 +63,28 @@ public class Rover {
 	
 	/** stop
 	 * 
+	 * Causes both wheels to stop moving simultaneously.
 	 */
 	public void stop() {
 		Motor.B.stop(true);
 		Motor.C.stop(true);
-		
 	}
 	
-	/** turn_to_angle
-	 * 
-	 * @param angle
+	/** turnToAngle
+	 * Rotate the robot TO a specified angle.
+	 * @param angle: the angle to rotate the robot to
 	 */
-	public void turn_to_angle(int angle) {	    
+	public void turnToAngle(int angle) {	    
 		Motor.B.rotate(angle*2, true);
 		Motor.C.rotate(-angle*2, true);
 		Delay.msDelay(1000);
 	}
 	
-	/** turn_left_90
-	 * 
+	/** turnLeft90
+	 *
+	 * Rotate the eyes by 90 degrees to the left.
 	 */
-	public void turn_left_90() {	
+	public void turnLeft90() {	
 		// motors overcompensate
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
@@ -89,10 +93,11 @@ public class Rover {
 		Delay.msDelay(1000);
 	}
 
-	/** turn_right_90
+	/** turnRight90
 	 * 
+	 * Rotate the eyes by 90 degrees to the right.
 	 */
-	public void turn_right_90() {
+	public void turnRight90() {
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
 		Motor.B.rotate(200, true);
@@ -100,64 +105,69 @@ public class Rover {
 		Delay.msDelay(1000);
 	}
 	
-	/** turn_180
+	/** turn180
 	 * 
+	 * Rotate the eyes by 180 degrees.
 	 */
-	public void turn_180() {
+	public void turn180() {
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
-		turn_left_90();
-		turn_left_90();
+		turnLeft90();
+		turnLeft90();
 		Delay.msDelay(1000);
 
 	}
 	
-	/** turn_eyes
+	/** turnEyesByAngle
 	 * 
-	 * Turns eyes BY an angle
-	 * @param angle
+	 * Turns eyes BY a specified angle.
+	 * @param angle: the angle to move the eyes BY
 	 */
-	public void turn_eyes_by_angle(int angle) {
+	public void turnEyesByAngle(int angle) {
 		Motor.A.setSpeed(500);
 		Motor.A.rotate(angle);
 	}
 	
-	/** eyes_to_front
+	/** turnEyesToAngle
 	 * 
+	 * Turns eyes towards an angle.
+	 * @param angle: the angle to move the eyes TO
 	 */
-	public void eyes_to_front() {
+	public void turnEyesToAngle(int angle) {
+		Motor.A.rotateTo(angle);
+	}
+	
+	/** moveEyesToFront
+	 * 
+	 * Moves the robot's UltraSound Sensor to face its front direction.
+	 */
+	public void moveEyesToFront() {
 		Motor.A.rotateTo(0);
 	}
 
-	/** camera_direction
+	/** cameraDirection
 	 * 
-	 * @param direction
+	 * Moves the camera to a specified direction.
+	 * @param direction: 'F' for forward, 'L' for left, 'R' for right.
 	 */
-	public void camera_direction(char direction) {
+	public void cameraDirection(char direction) {
 
+		// If direction is F, turn towards the front
 		if (direction == 'F') {
-			eyes_to_front();
+			moveEyesToFront();
 		}
 		
-		//If direction is L, turn towards the right
+		// If direction is L, turn towards the right
 		else if (direction == 'L') {
 
-			turn_eyes_to_angle(90);
+			turnEyesToAngle(90);
 		}
-		//If direction is R, turn towards the left
+		
+		// If direction is R, turn towards the left
 		else if (direction == 'R') {
-			turn_eyes_to_angle(-90);
+			turnEyesToAngle(-90);
 
 		}
-	}
-	
-	/** turn_eyes_to_angle
-	 * 
-	 * Turns eyes towards an angle
-	 * @param angle
-	 */
-	public void turn_eyes_to_angle(int angle) {
-		Motor.A.rotateTo(angle);
 	}
 
 }
