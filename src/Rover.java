@@ -9,7 +9,7 @@ public class Rover {
 	public Rover(int speed, int delay_time) {
 		this.speed = speed;
 		this.delay_time = delay_time;
-		Motor.A.setSpeed(100);
+		Motor.A.setSpeed(500);
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
 	}
@@ -91,7 +91,7 @@ public class Rover {
 	 * @param angle
 	 */
 	public void turn_eyes_by_angle(int angle) {
-		Motor.A.setSpeed(400);
+		Motor.A.setSpeed(500);
 		Motor.A.rotate(angle);
 	}
 	

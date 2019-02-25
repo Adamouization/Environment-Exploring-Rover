@@ -45,7 +45,7 @@ public class Robot {
 
 			moveBack(this_rover); 
 		
-			direction = this_robot.sweepEyes(this_rover, this_sensor); //sweep eyes and find a direction to move
+			direction = this_robot.sweepEyes(this_rover, this_sensor, direction); //sweep eyes and find a direction to move
 			//Direction is the direction that is free, camera points in the OPPOSITE DIRECTION
 			interpretDirection(this_rover, direction);
 			
@@ -104,18 +104,6 @@ public class Robot {
 					break;
 				}
 				
-				/*
-				this_rover.stop();
-				inchForwards(this_rover);
-				
-				
-				//If direction turned is left, wall was on the right, so a right turn is needed
-				if(direction == 'L') {
-					this_rover.turn_right_90();
-				} else if (direction == 'R') {
-					this_rover.turn_left_90();
-				}*/
-		
 			}
 			this_rover.stop();
 		}
@@ -128,42 +116,34 @@ public class Robot {
 	 * @param r
 	 * @return char
 	 */
-	private char wallState(boolean l, boolean m, boolean r) {
+	private char wallState(boolean l, boolean r) {
 		//LEFT and MIDDLE blocked, turn RIGHT
-		
-		m = true;
-		
-		if(l && m && !r) {
+				
+		//LEFT BLOCKED, RIGHT FREE
+		if(l && !r) {
 			System.out.println("CORNER, TURN RIGHT");
 			return 'R';
 		}
 		
-		//MIDDLE and RIGHT blocked, turn LEFT
-		else if(!l && m && r) {
+		//RIGHT BLOCKED, LEFT FREE
+		else if(!l && r) {
 			
 			System.out.println("CORNER, TURN LEFT");
 			return  'L';
 		} 
 		
-		//MIDDLE blocked, turn RIGHT
-		else if(!l && m && !r) {
+		//RIGHT FREE, LEFT FREE
+		else if(!l && !r) {
 			System.out.println("WALL AHEAD, TURN R");
 			return 'R' ;
 		}
 		
-		//LEFT, MIDDLE, and RIGHT blocked, back out
-		else if(l && m && r) {
+		//ALL BLOCKED
+		else if(l && r) {
 			System.out.println("SURROUNDED BY WALLS, TURN AROUND");
 			return 'B';
 		}
-		
-		//NO WALLS DETECTED so keep going forward
-		else if(!l && !m && !r) {
-			System.out.println("NO WALLS");
-			return 'F';
-		}
-		
-		//DEFAULT back and turn
+	
 		return 'P';
 		
 	}
@@ -175,32 +155,37 @@ public class Robot {
 	 * @param this_sensor
 	 * @return True if a wall is sensed
 	 */
-	private char sweepEyes(Rover this_rover, ISensors this_sensor) {
+	private char sweepEyes(Rover this_rover, ISensors this_sensor, char opposite_of_current_eye_direction) {
 		this_rover.eyes_to_front();
 		
 		boolean wall_on_left = false;
-		boolean wall_middle = false;
 		boolean wall_on_right = false;
+				
+		if(opposite_of_current_eye_direction == 'R') {
+			//Check Left 
+			this_rover.turn_eyes_to_angle(-90);
+			wall_on_left = this_sensor.ultrasoundSense(THRESHOLD, 15);
+			Delay.msDelay(100);
 		
-		//Check Left 
-		this_rover.turn_eyes_to_angle(-90);
-		wall_on_left = this_sensor.ultrasoundSense(THRESHOLD, 15);
-		Delay.msDelay(100);
-	
+			
+			//Check Right
+			this_rover.turn_eyes_to_angle(90);
+			wall_on_right = this_sensor.ultrasoundSense(THRESHOLD, 15);
+			Delay.msDelay(100);
+		} else {	
+			//Check Right
+			this_rover.turn_eyes_to_angle(90);
+			wall_on_right = this_sensor.ultrasoundSense(THRESHOLD, 15);
+			Delay.msDelay(100);
+			
+			//Check Left 
+			this_rover.turn_eyes_to_angle(-90);
+			wall_on_left = this_sensor.ultrasoundSense(THRESHOLD, 15);
+			Delay.msDelay(100);
+		}
 		
-		//Check Middle
 		this_rover.eyes_to_front();
-		wall_middle = this_sensor.ultrasoundSense(THRESHOLD, 15);
-		Delay.msDelay(100);
-
-		
-		//Check Right
-		this_rover.turn_eyes_to_angle(90);
-		wall_on_right = this_sensor.ultrasoundSense(THRESHOLD, 15);
-		Delay.msDelay(100);
-
-		this_rover.eyes_to_front();
-		return(wallState( wall_on_left, wall_middle, wall_on_right));
+		return(wallState( wall_on_left, wall_on_right));
 	}
 	
 	/** checkBumper
