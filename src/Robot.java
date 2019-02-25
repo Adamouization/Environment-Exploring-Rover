@@ -1,3 +1,4 @@
+import lejos.hardware.Button;
 import lejos.utility.Delay;
 
 
@@ -5,7 +6,6 @@ public class Robot {
 	
 	// define threshold constants for the Ultrasonic sensor
 	public static final float THRESHOLD = 0.10f;
-	public static final float THRESHOLD_FOLLOW = 0.40f;
 	public static final float TOLERANCE = 0.02f;
 	public static final float FOLLOWING_DISTANCE = 0.15f;
 
@@ -24,7 +24,10 @@ public class Robot {
 		boolean initial_state;
 		boolean wall_following_state;
 				
+		int numberOfBumps = 0;
 		
+        Button.waitForAnyPress();
+
 
 		// INITIAL STATE - move forward until bumper is pushed
 		char direction = 'F';
@@ -32,16 +35,24 @@ public class Robot {
 		wall_following_state = false;
 		this_rover.move_forwards();
 		
-		System.out.println("INITIAL STATE");
+//		System.out.println("INITIAL STATE");
 		while(initial_state) {
 			this_rover.move_forwards();
+			
 			initial_state = !checkBumper(this_sensor);
+			
+			if(!initial_state) {
+				numberOfBumps++;
+			}
+
 		}
 		
-		while(true) {
 		
+		while(true) {
+			System.out.println(numberOfBumps);
+
 			//SEARCHING STATE - UNDERSTAND STATE OF THE ENVIRONMENT
-			System.out.println("SEARCHING STATE");
+			//System.out.println("SEARCHING STATE");
 
 			moveBack(this_rover); 
 		
@@ -51,7 +62,7 @@ public class Robot {
 			
 			
 			//WALL FOLLOWING STATE - ROBOT IS PARALLEL TO A WALL WITH THE CAMERA FACING THE WALL
-			System.out.println("WALL FOLLOWING STATE");
+			//System.out.println("WALL FOLLOWING STATE");
 			wall_following_state = true;
 			boolean is_bumper_pushed = false;
 			while(true) {
@@ -59,7 +70,9 @@ public class Robot {
 				while(wall_following_state) {
 					
 					is_bumper_pushed = checkBumper(this_sensor);
-					
+					if(is_bumper_pushed) {
+						numberOfBumps++;
+					}
 					
 					if(is_bumper_pushed) {
 						break;
@@ -69,7 +82,6 @@ public class Robot {
 					
 						
 					if(distance_to_wall >= FOLLOWING_DISTANCE + TOLERANCE) {
-						System.out.println("TOWARDS");
 						
 						//camera points LEFT
 						if(direction == 'R') { 
@@ -82,7 +94,6 @@ public class Robot {
 						}
 						
 					} else if (distance_to_wall <= FOLLOWING_DISTANCE - TOLERANCE){
-						System.out.println("AWAY");
 		
 						//camera points LEFT
 						if(direction == 'R') { 
@@ -106,6 +117,8 @@ public class Robot {
 				
 			}
 			this_rover.stop();
+			
+
 		}
 	}	
 
@@ -121,26 +134,22 @@ public class Robot {
 				
 		//LEFT BLOCKED, RIGHT FREE
 		if(l && !r) {
-			System.out.println("CORNER, TURN RIGHT");
 			return 'R';
 		}
 		
 		//RIGHT BLOCKED, LEFT FREE
 		else if(!l && r) {
 			
-			System.out.println("CORNER, TURN LEFT");
 			return  'L';
 		} 
 		
 		//RIGHT FREE, LEFT FREE
 		else if(!l && !r) {
-			System.out.println("WALL AHEAD, TURN R");
 			return 'R' ;
 		}
 		
 		//ALL BLOCKED
 		else if(l && r) {
-			System.out.println("SURROUNDED BY WALLS, TURN AROUND");
 			return 'B';
 		}
 	
@@ -195,6 +204,7 @@ public class Robot {
 	 * @return True if bumper sensor triggered, False if not
 	 */
 	public static boolean checkBumper(ISensors this_sensor) {
+		
 		boolean bumper_pushed;
 		bumper_pushed = this_sensor.bumper_sensor();
 		return bumper_pushed;
