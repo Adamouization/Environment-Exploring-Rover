@@ -55,7 +55,7 @@ public class Robot {
 		
 		//Check Left 
 		this_rover.turn_eyes_to_angle(-90);
-		wall_on_left = this_sensor.IRSense(THRESHOLD, 15);
+		wall_on_left = this_sensor.ultrasoundSense(THRESHOLD, 15);
 
 		Delay.msDelay(100);
 	
@@ -63,14 +63,14 @@ public class Robot {
 		//Check Middle
 		this_rover.eyes_to_front();
 		
-		wall_middle = this_sensor.IRSense(THRESHOLD, 15);
+		wall_middle = this_sensor.ultrasoundSense(THRESHOLD, 15);
 
 		Delay.msDelay(100);
 
 		
 		//Check Right
 		this_rover.turn_eyes_to_angle(90);
-		wall_on_right = this_sensor.IRSense(THRESHOLD, 15);
+		wall_on_right = this_sensor.ultrasoundSense(THRESHOLD, 15);
 
 		Delay.msDelay(100);
 
@@ -195,12 +195,15 @@ public class Robot {
 			while(true) {
 				
 				while(wall_following_state) {
+					
 					this_rover.move_forwards();	
 					is_bumper_pushed = check_bumper(this_sensor);
 					if(is_bumper_pushed) {
 						break;
 					}
-					wall_following_state = this_sensor.IRSense(THRESHOLD_FOLLOW, 15); //CHECK IF WALL IS STILL THERE
+					wall_following_state = this_sensor.ultrasoundSense(THRESHOLD_FOLLOW, 15); //CHECK IF WALL IS STILL THERE
+					
+					//CHECK DISTANCE TO WALL AND ADJUST MOTORS HERE
 					System.out.println(wall_following_state);
 				}
 				

@@ -31,7 +31,7 @@ public class Sensors implements ISensors {
 	public static final int infinityReading = 1000;
 	
 	@Override
-	public boolean IRSense(float threshold, int numberOfReadings) {
+	public boolean ultrasoundSense(float threshold, int numberOfReadings) {
 		
 		initialValues = new float[numberOfReadings];
 
