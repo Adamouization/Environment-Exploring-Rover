@@ -119,6 +119,11 @@ public class Sensors implements ISensors {
 	}
 
 	@Override
+	/**bumper_sensor
+	 * 
+	 * return TRUE if both bumpers are pressed
+	 * ELSE false
+	 */
 	public boolean bumper_sensor() {
 		
 		float[] left_sample = new float[sp.sampleSize()];
