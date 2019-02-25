@@ -4,9 +4,11 @@ import lejos.utility.Delay;
 public class Robot {
 	
 	// define threshold constants for the Ultrasonic sensor
-	public static final float THRESHOLD = 0.1f;
-	public static final float THRESHOLD_FOLLOW = 0.4f;
-	
+	public static final float THRESHOLD = 0.10f;
+	public static final float THRESHOLD_FOLLOW = 0.40f;
+	public static final float TOLERANCE = 0.02f;
+	public static final float FOLLOWING_DISTANCE = 0.15f;
+
 	/** main
 	 * 
 	 * Program entry point.
@@ -15,13 +17,15 @@ public class Robot {
 	public static void main(String[] args) {
 		// create new objects
 		Robot this_robot = new Robot();
-		Rover this_rover = new Rover(400, 100);
+		Rover this_rover = new Rover(500, 100);
 		ISensors this_sensor = new Sensors();		
 		
 		// booleans to keep track of system states
 		boolean initial_state;
 		boolean wall_following_state;
+				
 		
+
 		// INITIAL STATE - move forward until bumper is pushed
 		char direction = 'F';
 		initial_state = true;
@@ -42,6 +46,7 @@ public class Robot {
 			moveBack(this_rover); 
 		
 			direction = this_robot.sweepEyes(this_rover, this_sensor); //sweep eyes and find a direction to move
+			//Direction is the direction that is free, camera points in the OPPOSITE DIRECTION
 			interpretDirection(this_rover, direction);
 			
 			
@@ -53,21 +58,53 @@ public class Robot {
 				
 				while(wall_following_state) {
 					
-					this_rover.move_forwards();	
 					is_bumper_pushed = checkBumper(this_sensor);
+					
+					
 					if(is_bumper_pushed) {
 						break;
 					}
-					wall_following_state = this_sensor.ultrasoundSense(THRESHOLD_FOLLOW, 15); //CHECK IF WALL IS STILL THERE
+						
+					float distance_to_wall = this_sensor.ultrasoundSenseDistanceToWall(THRESHOLD, 50);
 					
-					//CHECK DISTANCE TO WALL AND ADJUST MOTORS HERE
-					System.out.println(wall_following_state);
+						
+					if(distance_to_wall >= FOLLOWING_DISTANCE + TOLERANCE) {
+						System.out.println("TOWARDS");
+						
+						//camera points LEFT
+						if(direction == 'R') { 
+							this_rover.curve_while_moving(-100);
+						} 
+						
+						//camera points RIGHT
+						else if(direction == 'L') { 
+							this_rover.curve_while_moving(100);
+						}
+						
+					} else if (distance_to_wall <= FOLLOWING_DISTANCE - TOLERANCE){
+						System.out.println("AWAY");
+		
+						//camera points LEFT
+						if(direction == 'R') { 
+							this_rover.curve_while_moving(100);
+						} 
+						
+						//camera points RIGHT
+						else if(direction == 'L') { 
+							this_rover.curve_while_moving(-100);
+						}
+												
+					} else {
+						this_rover.move_forwards();
+					}
+					
 				}
 				
 				if(is_bumper_pushed) {
 					break;
 				}
-					
+				
+				/*
 				this_rover.stop();
 				inchForwards(this_rover);
 				
@@ -77,7 +114,7 @@ public class Robot {
 					this_rover.turn_right_90();
 				} else if (direction == 'R') {
 					this_rover.turn_left_90();
-				}
+				}*/
 		
 			}
 			this_rover.stop();
@@ -93,6 +130,9 @@ public class Robot {
 	 */
 	private char wallState(boolean l, boolean m, boolean r) {
 		//LEFT and MIDDLE blocked, turn RIGHT
+		
+		m = true;
+		
 		if(l && m && !r) {
 			System.out.println("CORNER, TURN RIGHT");
 			return 'R';

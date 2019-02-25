@@ -30,7 +30,7 @@ public class Sensors implements ISensors {
 	private static EV3TouchSensor touch_sensor_R = new EV3TouchSensor(SensorPort.S3);
 	public static final int infinityReading = 1000;
 	
-	
+	@Override
 	public float ultrasoundSenseDistanceToWall(float threshold, int numberOfReadings) {
 		initialValues = new float[numberOfReadings];
 
@@ -141,7 +141,7 @@ public class Sensors implements ISensors {
 		touch_sensor_R.fetchSample(right_sample, 0);
 		right_value = (int)right_sample[0];
 		
-		if((left_value ==  1) && (right_value == 1)) {
+		if((left_value ==  1) || (right_value == 1)) {
 			return true;
 		}
 		return false;

@@ -21,6 +21,20 @@ public class Rover {
 		Motor.C.forward();
 	}
 	
+	/**Curve slightly while moving
+	 * 
+	 * + = curve right
+	 * - = curve left
+	 * 
+	 * @param speed_difference
+	 */
+	public void curve_while_moving(int speed_difference) {
+		Motor.B.setSpeed(speed + speed_difference);
+		Motor.C.setSpeed(speed - speed_difference);
+		Motor.B.forward();
+		Motor.C.forward();
+	}
+	
 	public void move_backward() {
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
@@ -77,7 +91,7 @@ public class Rover {
 	 * @param angle
 	 */
 	public void turn_eyes_by_angle(int angle) {
-		Motor.A.setSpeed(100);
+		Motor.A.setSpeed(400);
 		Motor.A.rotate(angle);
 	}
 	
