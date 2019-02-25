@@ -28,14 +28,13 @@ public class Robot {
 		
         Button.waitForAnyPress();
 
-
 		// INITIAL STATE - move forward until bumper is pushed
 		char direction = 'F';
 		initial_state = true;
 		wall_following_state = false;
 		this_rover.move_forwards();
 		
-//		System.out.println("INITIAL STATE");
+		// System.out.println("INITIAL STATE");
 		while(initial_state) {
 			this_rover.move_forwards();
 			
@@ -206,7 +205,7 @@ public class Robot {
 	public static boolean checkBumper(ISensors this_sensor) {
 		
 		boolean bumper_pushed;
-		bumper_pushed = this_sensor.bumper_sensor();
+		bumper_pushed = this_sensor.bumperSensor();
 		return bumper_pushed;
 	}
 	

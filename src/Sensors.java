@@ -6,11 +6,15 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.robotics.SampleProvider;
 
+/**
+ * 
+ * @author ajaamour, tslattery
+ */
 public class Sensors implements ISensors {
 	
 	// Initialise variables
-	int left_value; 
-	int right_value; 
+	int leftValue; 
+	int rightValue; 
 	float readingValue; 
 	float mean;
 	float sumOfSquares;
@@ -26,11 +30,14 @@ public class Sensors implements ISensors {
 	// LeJOS variables
 	private static EV3UltrasonicSensor UltrasonicSensor = new EV3UltrasonicSensor(SensorPort.S4);
 	SampleProvider sp = UltrasonicSensor.getDistanceMode();
-	private static EV3TouchSensor touch_sensor_L = new EV3TouchSensor(SensorPort.S2);
-	private static EV3TouchSensor touch_sensor_R = new EV3TouchSensor(SensorPort.S3);
+	private static EV3TouchSensor touchSensorL = new EV3TouchSensor(SensorPort.S2);
+	private static EV3TouchSensor touchSensorR = new EV3TouchSensor(SensorPort.S3);
 	public static final int infinityReading = 1000;
 	
 	@Override
+	/**
+	 * Returns the distance to the wall while using standard deviation to rule out odd readings and filter out noisy values.
+	 */
 	public float ultrasoundSenseDistanceToWall(float threshold, int numberOfReadings) {
 		initialValues = new float[numberOfReadings];
 
@@ -112,39 +119,45 @@ public class Sensors implements ISensors {
 		
 		return distance;
 	}
+	
+
 	@Override
+	/** ultrasoundSense
+	 * 
+	 * Returns a boolean: true if there is a wall, false if not.
+	 */
 	public boolean ultrasoundSense(float threshold, int numberOfReadings) {
 		
 		distance = ultrasoundSenseDistanceToWall(threshold, numberOfReadings);
 
 		// Return boolean to specify if a wall is nearby or not
 		if(distance <= threshold) {
-			return true; // there is wall
+			return true; // there is a wall
 		}
 		return false; // there is no wall
 	}
 
 	@Override
-	/**bumper_sensor
+	/** bumperSensor
 	 * 
-	 * return TRUE if both bumpers are pressed
-	 * ELSE false
+	 * Returns TRUE if either of the 2 touch sensors are pressed, ELSE returns false.
 	 */
-	public boolean bumper_sensor() {
+	public boolean bumperSensor() {
+		// left touch sensor
+		float[] leftSample = new float[sp.sampleSize()];
+		touchSensorL.fetchSample(leftSample, 0);
+		leftValue = (int)leftSample[0];
 		
-		float[] left_sample = new float[sp.sampleSize()];
-		touch_sensor_L.fetchSample(left_sample, 0);
-		left_value = (int)left_sample[0];
+		// right touch sensor
+		float[] rightSample = new float[sp.sampleSize()];
+		touchSensorR.fetchSample(rightSample, 0);
+		rightValue = (int)rightSample[0];
 		
-		
-		float[] right_sample = new float[sp.sampleSize()];
-		touch_sensor_R.fetchSample(right_sample, 0);
-		right_value = (int)right_sample[0];
-		
-		if((left_value ==  1) || (right_value == 1)) {
+		// return true if either the left or right bumper sensors are activated, else false
+		if((leftValue ==  1) || (rightValue == 1)) {
 			return true;
 		}
 		return false;
 	}
-
+	
 }
