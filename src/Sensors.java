@@ -30,9 +30,8 @@ public class Sensors implements ISensors {
 	private static EV3TouchSensor touch_sensor_R = new EV3TouchSensor(SensorPort.S3);
 	public static final int infinityReading = 1000;
 	
-	@Override
-	public boolean ultrasoundSense(float threshold, int numberOfReadings) {
-		
+	
+	public float ultrasoundSenseDistanceToWall(float threshold, int numberOfReadings) {
 		initialValues = new float[numberOfReadings];
 
 		// Read sensor values and store them in a list
@@ -110,6 +109,13 @@ public class Sensors implements ISensors {
 		} else {
 			distance = infinityReading;
 		}
+		
+		return distance;
+	}
+	@Override
+	public boolean ultrasoundSense(float threshold, int numberOfReadings) {
+		
+		distance = ultrasoundSenseDistanceToWall(threshold, numberOfReadings);
 
 		// Return boolean to specify if a wall is nearby or not
 		if(distance <= threshold) {
