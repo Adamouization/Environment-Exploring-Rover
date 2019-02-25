@@ -1,11 +1,21 @@
 import lejos.hardware.motor.Motor;
 import lejos.utility.Delay;
 
+/**
+ * 
+ * @author tslattery
+ *
+ */
 public class Rover {
 
 	private int speed;
 	private int delay_time;
 	
+	/** Rover
+	 * 
+	 * @param speed
+	 * @param delay_time
+	 */
 	public Rover(int speed, int delay_time) {
 		this.speed = speed;
 		this.delay_time = delay_time;
@@ -14,6 +24,9 @@ public class Rover {
 		Motor.C.setSpeed(speed);
 	}
 
+	/** move_forwards
+	 * 
+	 */
 	public void move_forwards() {
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
@@ -21,11 +34,11 @@ public class Rover {
 		Motor.C.forward();
 	}
 	
-	/**Curve slightly while moving
+	/** curve_while_moving
 	 * 
+	 * Curve slightly while moving
 	 * + = curve right
 	 * - = curve left
-	 * 
 	 * @param speed_difference
 	 */
 	public void curve_while_moving(int speed_difference) {
@@ -35,6 +48,9 @@ public class Rover {
 		Motor.C.forward();
 	}
 	
+	/** move_backward
+	 * 
+	 */
 	public void move_backward() {
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
@@ -42,40 +58,51 @@ public class Rover {
 		Motor.C.backward();
 	}
 	
-	
+	/** stop
+	 * 
+	 */
 	public void stop() {
 		Motor.B.stop(true);
 		Motor.C.stop(true);
 		
 	}
 	
+	/** turn_to_angle
+	 * 
+	 * @param angle
+	 */
 	public void turn_to_angle(int angle) {	    
 		Motor.B.rotate(angle*2, true);
 		Motor.C.rotate(-angle*2, true);
 		Delay.msDelay(1000);
 	}
 	
-	//Motors overcompensate
+	/** turn_left_90
+	 * 
+	 */
 	public void turn_left_90() {	
+		// motors overcompensate
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
 		Motor.B.rotate(-200, true);
 		Motor.C.rotate(200);
 		Delay.msDelay(1000);
-
-
 	}
 
+	/** turn_right_90
+	 * 
+	 */
 	public void turn_right_90() {
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
 		Motor.B.rotate(200, true);
 		Motor.C.rotate(-200);
 		Delay.msDelay(1000);
-
-
 	}
 	
+	/** turn_180
+	 * 
+	 */
 	public void turn_180() {
 		Motor.B.setSpeed(speed);
 		Motor.C.setSpeed(speed);
@@ -95,10 +122,17 @@ public class Rover {
 		Motor.A.rotate(angle);
 	}
 	
+	/** eyes_to_front
+	 * 
+	 */
 	public void eyes_to_front() {
 		Motor.A.rotateTo(0);
 	}
 
+	/** camera_direction
+	 * 
+	 * @param direction
+	 */
 	public void camera_direction(char direction) {
 
 		if (direction == 'F') {

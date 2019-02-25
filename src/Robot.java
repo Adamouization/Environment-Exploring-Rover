@@ -1,7 +1,11 @@
 import lejos.hardware.Button;
 import lejos.utility.Delay;
 
-
+/**
+ * 
+ * @author tslattery
+ *
+ */
 public class Robot {
 	
 	// define threshold constants for the Ultrasonic sensor
@@ -43,9 +47,7 @@ public class Robot {
 			if(!initial_state) {
 				numberOfBumps++;
 			}
-
 		}
-		
 		
 		while(true) {
 			System.out.println(numberOfBumps);
