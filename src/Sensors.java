@@ -26,16 +26,15 @@ public class Sensors implements ISensors {
 	// LeJOS variables
 	private static EV3UltrasonicSensor UltrasonicSensor = new EV3UltrasonicSensor(SensorPort.S4);
 	SampleProvider sp = UltrasonicSensor.getDistanceMode();
-   
 	private static EV3TouchSensor touch_sensor_L = new EV3TouchSensor(SensorPort.S2);
 	private static EV3TouchSensor touch_sensor_R = new EV3TouchSensor(SensorPort.S3);
-
 	public static final int infinityReading = 1000;
 	
 	@Override
 	public boolean IRSense(float threshold, int numberOfReadings) {
 		
 		initialValues = new float[numberOfReadings];
+
 		// Read sensor values and store them in a list
 		for(int i = 0; i < numberOfReadings; i++){
 			
@@ -43,10 +42,10 @@ public class Sensors implements ISensors {
 			float[] sample = new float[sp.sampleSize()];
 			sp.fetchSample(sample, 0);
 			readingValue = sample[0];
-//			System.out.println(readingValue);
-			
-			// set to a lower value if the maximum 32-bit integer value is read from the sensor
+ 			
+			// set to a lower value if the maximum 32-bit float value is read from the sensor
 			if (readingValue >= Float.MAX_VALUE) {
+	
 				readingValue = infinityReading;
 			}
 			initialValues[i] = readingValue;
@@ -54,7 +53,7 @@ public class Sensors implements ISensors {
 		
 		// DEBUG: uncomment to print values read from IR sensor
 		//System.out.println(Arrays.toString(initialValues));
-		
+
 		// Get the mean
 		sumOfSquares = 0;
 		for (int i = 0; i < initialValues.length; i++) { // Taking the average to numbers
@@ -111,7 +110,7 @@ public class Sensors implements ISensors {
 		} else {
 			distance = infinityReading;
 		}
-		System.out.println(distance);
+
 		// Return boolean to specify if a wall is nearby or not
 		if(distance <= threshold) {
 			return true; // there is wall
