@@ -23,7 +23,24 @@
 
 \section{Introduction}
 
+This experiment determines the effect of distance from the walls on the path taken of a wall following rover created with the LEGO Mindstorm EV3 kit. The following distance is related to both the time taken to traverse a given area and the number of collisions with the walls. It also directly effects the level of granularity 
+
+to the level of detail with which parts of the area are explored.  
+
+
+
+
+
 The robot is built using the LEGO Mindstorm EV3 kit. Three sensors are used to allow the robot to analyse its environment: two touch sensors and one ultra sonic sensor, along with three motors that provide movement: two large motors for the wheels and one medium motor for the ultra sonic sensor's direction.
+
+See a picture of the robot built in Figure \ref{fig:robot-portrait}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{figures/robot_portrait.jpeg}
+\caption{Robot portrait}
+  \label{fig:robot-portrait}
+\end{figure}
 
 \begin{comment}
 Todo:
@@ -43,7 +60,10 @@ Todo:
 % ----------------------------------------------------------------------------
 
 \section{Approach}
-The EV3 rover was designed following the simple reflex agent architecture  \cite{brooks1991intelligence}
+The EV3 rover was designed following the simple reflex agent architecture  \cite{brooks1991intelligence}\\
+
+
+Two types of sensors are used to allow the rover to collect data about the environment. A pair of EV3 Touch Sensors are mounted on the front of the rover. They are responsible for detecting collisions with walls. A bar connects the two sensors, with a collision being detected as a response from either sensor. An Ultrasonic depth sensor is used in the "searching" state, once the depth sensor has been triggered. The possible configurations of the position of the robot in relation to the world have been reduced to states observable by the Ultrasonic sensor looking to the left and to the right.\\
 
 The rover has three main states which it can transition between.
 \begin{itemize}
@@ -51,17 +71,18 @@ The rover has three main states which it can transition between.
     \item Searching
     \item Wall Following
 \end{itemize}
-    
-Two types of sensors are used to allow the rover to collect data about the environment. A pair of EV3 Touch Sensors are mounted on the front of the rover. They are responsible for detecting collisions with walls. A bar connects the two sensors, with a collision being detected as a response from either sensor. An Ultrasonic depth sensor is used in the "searching" state, once the depth sensor has been triggered. The possible configurations of the position of the robot in relation to the world have been reduced to states observable by the Ultrasonic sensor looking to the left and to the right. 
 
-Experimental Procedure
+The rover begins in the initial state, travelling forwards until it hits a wall (as detected by the touch sensor). Once a wall is detected, the rover enters the searching state. The ultrasonic sensor is turned to the left and right using the servo motor, allowing the robot to check whether it is a corner or against a flat wall (see Figure XXXXXXXXXXXXX for a diagram of each possible configuration of the walls). The robot then turns by 90 degrees and rotates the ultrasonic sensor to face the wall. 
+To ensure that the robot makes a full circuit of the arena, it is programmed to always make a right turn if it is possible to do so.\\
 
-The rover is placed in an arena, consisting of several fully enclosing walls. The robot begins from a designated starting point. The shape of the arena is preserved between trials.
-A single trial consists of a full lap of the arena, returning to the starting point. 
+The rover then enters the wall following state, and begins moving parallel to the wall. The ultrasonic sensor is used to maintain a constant distance. The rover continues in this state until the bumper sensor is hit again.
 
+\subsection{Experimental Procedure}
 
+The rover is placed in an arena, consisting of several fully enclosing walls (Figure XXXXXXXXXXX). The robot begins from a designated starting line. The shape of the arena is preserved between trials.
 
-
+A single trial consists of a full lap of the arena, returning to the starting point. The time to traverse and the number of bumps are recorded during each trial. 
+The rover is tested for different distances of the wallfollowing 
 
 \begin{comment}
 Todo:
@@ -87,7 +108,7 @@ Values to test for: [0.01, 0.10, 0.15, 0.20, 0.40, 0.60, 0.80, 1.00]
 
 \begin{figure*}[ht]
 \centering
-\includegraphics[width=\linewidth]{figures/System-Flowchart.png}
+\includegraphics[width=\linewidth]{figures/flowchart/System-Flowchart.png}
 \caption{Flowchart}
   \label{fig:flowchart}
 \end{figure*}
