@@ -12,7 +12,7 @@ public class Robot {
 	// define threshold constants for the Ultrasonic sensor
 	public static final float THRESHOLD = 0.10f;
 	public static final float TOLERANCE = 0.02f;
-	public static final float FOLLOWING_DISTANCE = 0.15f;
+	public static final float FOLLOWING_DISTANCE = 0.15f; // change this to determine how closely the robot will follow the wall
 
 	/** main
 	 * 
